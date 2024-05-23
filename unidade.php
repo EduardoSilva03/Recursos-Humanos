@@ -1,7 +1,11 @@
-<?php include ('./conn.php'); ?>
+<?php 
+
+include ('./conn.php');
+
+?>
 
 <?php 
-  /*
+  
   if (isset($_POST['submit']))
   {
 
@@ -28,7 +32,7 @@
   
   $sql = "SELECT nome FROM unidade";
   $result = $conn->query($sql);
-  */
+  
   ?>
 
 <!doctype html>

@@ -1,25 +1,26 @@
 <?php include ('./conn.php'); ?>
 
 <?php 
-  /* 
-  if (isset($_POST['submit']))
-  {
+  if (isset($_POST['submit'])) {
+    $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
+    $fk_id_unidade = isset($_POST['unidade']) ? $_POST['unidade'] : '';
 
-  $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
-  $fk_id_unidade = isset($_POST['fk_id_unidade']) ? $_POST['fk_id_unidade'] : '';
-
-  $string_sql = mysqli_query($conn, "INSERT INTO setor (nome, fk_id_unidade) 
-  VALUES ('$nome', '$fk_id_unidade')");
+    if ($nome && $fk_id_unidade) {
+      $string_sql = mysqli_query($conn, "INSERT INTO setor (nome, cd_unidade) 
+        VALUES ('$nome', '$fk_id_unidade')");
+      if (!$string_sql) {
+        echo "Erro ao cadastrar setor: " . mysqli_error($conn);
+      } else {
+        echo "Setor cadastrado com sucesso.";
+      }
+    }
   }
+?>
 
-  ?>
-  
 <?php 
-  
-  $sql = "SELECT nome FROM unidade";
+  $sql = "SELECT cd_unidade, nome FROM unidade";
   $result = $conn->query($sql);
-  */
-  ?>
+?>
 
 <!doctype html>
 <html lang="pt-BR">
@@ -36,7 +37,7 @@
   <body class="p-3 m-0 border-0 bd-example m-0 border-0" style="background-image: url(img/fundoabs.jpg);">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
+    <div class="container-fluid">
         <a class="navbar-brand" href="/Recursos Humanos/index.php">Recursos Humanos</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -67,52 +68,48 @@
 
     <br>
 
-<b class="d-flex justify-content-center">Setor</b><br>
+    <b class="d-flex justify-content-center">Setor</b><br>
 
-<form method="post" action="setor.php">
-<div class="row g-3 d-flex justify-content-center">
-      <div class="col-sm-1">
-        <label>Código:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Código" disabled=true>
+    <form method="post" action="setor.php">
+      <div class="row g-3 d-flex justify-content-center">
+        <div class="col-sm-1">
+          <label>Código:</label>
+          <input type="text" class="form-control border border-dark" aria-label="Código" disabled>
+        </div>
+        <div class="col-sm-3">
+          <label>Nome:</label>
+          <input type="text" class="form-control border border-dark" aria-label="Nome" name="nome">
+        </div>
       </div>
-      <div class="col-sm-3">
-        <label>Nome:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Nome" name="nome">
-      </div>
-</div>
 
-<br>
+      <br>
 
-<div class="row g-3 d-flex justify-content-center">
-    <div class="col-sm-4">
-        <select class="form-select border border-dark" id="floatingSelect" aria-label="Floating label select example" name="unidade">
-        <option value="" disabled selected>Selecionar Unidade Existente</option>
+      <div class="row g-3 d-flex justify-content-center">
+        <div class="col-sm-4">
+          <select class="form-select border border-dark" name="unidade">
+            <option value="" disabled selected>Selecionar Unidade Existente</option>
             <?php
-            // Verificar se há resultados da consulta
-            if ($result->num_rows > 0) {
-              // Loop através dos resultados e exibir opções
-              while($row = $result->fetch_assoc()) {
-                echo "<option value='" . $row['nome'] . "'>" . $row['nome'] . "</option>";
+              if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                  echo "<option value='" . $row['cd_unidade'] . "'>" . $row['nome'] . "</option>";
+                }
               }
-            }
             ?>
-        </select>
-    </div>
-</div>
+          </select>
+        </div>
+      </div>
 
-<br>
+      <br>
 
-<div class="row g-3 d-flex justify-content-center">
-  <div class="col-sm-2">
-    <br>
-    <button class="form-control btn btn btn-success" type="submit" value="submit" name="submit">Cadastrar</button>
-  </div>
-  <div class="col-sm-2">
-    <br>
-    <button class="form-control btn btn btn-danger">Deletar</button>
-  </div>
-</div>
-</form>
+      <div class="row g-3 d-flex justify-content-center">
+        <div class="col-sm-2">
+          <button class="form-control btn btn-success" type="submit" value="submit" name="submit">Cadastrar</button>
+        </div>
+        <div class="col-sm-2">
+          <button class="form-control btn btn-danger" type="button">Deletar</button>
+        </div>
+      </div>
+    </form>
 
   </body>
 </html>

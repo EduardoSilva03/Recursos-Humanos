@@ -1,7 +1,44 @@
+<?php include ('./conn.php'); ?>
+
 <?php
 
-  include_once('conn.php');
+  if (isset($_POST['submit'])) {
+    $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
+    $rg = isset($_POST['rg']) ? $_POST['rg'] : '';
+    $cpf = isset($_POST['cpf']) ? $_POST['cpf'] : '';
+    $data_nascimento = isset($_POST['data_nascimento']) ? $_POST['data_nascimento'] : '';
+    $sexo = isset($_POST['sexo']) ? $_POST['sexo'] : '';
+    $celular = isset($_POST['celular']) ? $_POST['celular'] : '';
+    $telefone = isset($_POST['telefone']) ? $_POST['telefone'] : '';
+    $fk_id_unidade = isset($_POST['unidade']) ? $_POST['unidade'] : '';
+    $fk_id_setor = isset($_POST['setor']) ? $_POST['setor'] : '';
+    $cep = isset($_POST['cep']) ? $_POST['cep'] : '';
+    $municipio = isset($_POST['municipio']) ? $_POST['municipio'] : '';
+    $uf = isset($_POST['uf']) ? $_POST['uf'] : '';
+    $logradouro = isset($_POST['logradouro']) ? $_POST['logradouro'] : '';
+    $numero = isset($_POST['numero']) ? $_POST['numero'] : '';
+    $complemento = isset($_POST['complemento']) ? $_POST['complemento'] : '';
+    $bairro = isset($_POST['bairro']) ? $_POST['bairro'] : '';
 
+    if ($nome && $rg && $cpf && $data_nascimento && $sexo && $celular && $telefone && $fk_id_unidade && $fk_id_setor && $cep && $municipio && $uf && $logradouro && $numero && $complemento && $bairro) {
+      $string_sql = mysqli_query($conn, "INSERT INTO pessoa_fisica (nome, rg, cpf, data_nascimento, sexo, celular, telefone, cd_unidade, cd_setor, cep, municipio, uf, logradouro, numero, complemento, bairro) 
+        VALUES ('$nome', '$rg', '$cpf', '$data_nascimento', '$sexo', '$celular', '$telefone', '$fk_id_unidade', '$fk_id_setor', '$cep', '$municipio', '$uf', '$logradouro', '$numero', '$complemento', '$bairro')");
+      if (!$string_sql) {
+        echo "Erro ao cadastrar pessoa física: " . mysqli_error($conn);
+      } else {
+        echo "Pessoa física cadastrada com sucesso.";
+      }
+    }
+  }
+
+?>
+
+<?php 
+  $sql = "SELECT cd_unidade, nome FROM unidade";
+  $result = $conn->query($sql);
+
+  $sql2 = "SELECT cd_setor, nome FROM setor";
+  $result2 = $conn->query($sql2);
 ?>
 
 <!doctype html>
@@ -53,14 +90,15 @@
 
 <b class="d-flex justify-content-center">Identificação</b><br>
 
+<form method="post" action="pessoa_fisica.php">
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-1">
         <label>Código:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Código" disabled=true>
+        <input type="text" class="form-control border border-dark" aria-label="Código" disabled=true id="codigo">
       </div>
       <div class="col-sm-3">
         <label>Nome Completo:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Nome Completo">
+        <input type="text" class="form-control border border-dark" aria-label="Nome Completo" id="nome", name="nome">
       </div>
 </div>
 
@@ -69,11 +107,11 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-2">
         <label>RG:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Rg" maxlength="7">
+        <input type="text" class="form-control border border-dark" aria-label="Rg" maxlength="7" name="rg">
       </div>
       <div class="col-sm-2">
         <label>CPF:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Cpf" maxlength="11">
+        <input type="text" class="form-control border border-dark" aria-label="Cpf" maxlength="11" name="cpf">
       </div>
 </div>
 
@@ -82,11 +120,11 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-2">
         <label>Data Nascimento:</label>
-        <input type="date" class="form-control border border-dark" aria-label="Nascimento">
+        <input type="date" class="form-control border border-dark" aria-label="Nascimento" name="data_nascimento">
       </div>
       <div class="col-sm-2">
         <label>Sexo:</label>
-        <select class="form-select border border-dark" id="floatingSelect" aria-label="Floating label select example">
+        <select class="form-select border border-dark" id="floatingSelect" aria-label="Floating label select example" name="sexo">
         <option value="" disabled selected>Não informado</option>
         <option value="1">Masculino</option>
         <option value="2">Feminino</option>
@@ -99,25 +137,41 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-2">
         <label>Celular:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Celular">
+        <input type="text" class="form-control border border-dark" aria-label="Celular" name="celular">
       </div>
       <div class="col-sm-2">
         <label>Telefone (opcional):</label>
-        <input type="text" class="form-control border border-dark" aria-label="Telefone">
+        <input type="text" class="form-control border border-dark" aria-label="Telefone" name="telefone">
       </div>
 </div>
 
 <br>
 
 <div class="row g-3 d-flex justify-content-center">
-      <div class="col-sm-2">
-        <label>Unidade:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Unidade">
-      </div>
-      <div class="col-sm-2">
-        <label>Setor:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Setor">
-      </div>
+        <div class="col-sm-2">
+          <select class="form-select border border-dark" name="unidade">
+            <option value="" disabled selected>Selecionar Unidade Existente</option>
+            <?php
+              if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                  echo "<option value='" . $row['cd_unidade'] . "'>" . $row['nome'] . "</option>";
+                }
+              }
+            ?>
+          </select>
+        </div>
+        <div class="col-sm-2">
+          <select class="form-select border border-dark" name="setor">
+            <option value="" disabled selected>Selecionar Setor Existente</option>
+            <?php
+              if ($result2->num_rows > 0) {
+                while($row = $result2->fetch_assoc()) {
+                  echo "<option value='" . $row['cd_setor'] . "'>" . $row['nome'] . "</option>";
+                }
+              }
+            ?>
+          </select>
+        </div>
 </div>
 
 <br>
@@ -127,11 +181,11 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-1">
         <label>CEP:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Cep" id="cep">
+        <input type="text" class="form-control border border-dark" aria-label="Cep" id="cep" name="cep">
       </div>
       <div class="col-sm-1">
         <br>
-        <button class="form-control btn btn-outline-secondary" onclick="consultaCep()">Buscar</button>
+        <button type="button" class="form-control btn btn-outline-secondary" onclick="consultaCep()">Buscar</button>
       </div>
 </div>
 
@@ -140,11 +194,11 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-3">
         <label>Município:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Município" id="municipio">
+        <input type="text" class="form-control border border-dark" aria-label="Município" id="municipio" name="municipio">
       </div>
       <div class="col-sm-1">
         <label>UF:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Uf" id="uf">
+        <input type="text" class="form-control border border-dark" aria-label="Uf" id="uf" name="uf">
       </div>
 </div>
 
@@ -153,11 +207,11 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-3">
         <label>Logradouro:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Logradouro" id="logradouro">
+        <input type="text" class="form-control border border-dark" aria-label="Logradouro" id="logradouro" name="logradouro">
       </div>
       <div class="col-sm-1">
         <label>Número:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Número">
+        <input type="text" class="form-control border border-dark" aria-label="Número" name="numero">
       </div>
 </div>
 
@@ -166,11 +220,11 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-2">
         <label>Complemento:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Complemento">
+        <input type="text" class="form-control border border-dark" aria-label="Complemento" name="complemento">
       </div>
       <div class="col-sm-2">
         <label>Bairro:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Bairro" id="bairro">
+        <input type="text" class="form-control border border-dark" aria-label="Bairro" id="bairro" name="bairro">
       </div>
 </div>
 
@@ -179,13 +233,14 @@
 <div class="row g-3 d-flex justify-content-center">
   <div class="col-sm-2">
     <br>
-    <button class="form-control btn btn btn-success">Cadastrar</button>
+    <button class="form-control btn btn btn-success" type="submit" value="submit" name="submit">Cadastrar</button>
   </div>
   <div class="col-sm-2">
     <br>
-    <button class="form-control btn btn btn-danger">Deletar</button>
+    <button type="button" class="form-control btn btn btn-danger">Deletar</button>
   </div>
 </div>
+</form>
 
   </body>
 </html>
