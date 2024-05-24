@@ -2,25 +2,19 @@
 include_once('conn.php');
 
 if (isset($_POST['submit'])) {
-    // Recupera os valores do formulário
-    $matricula = $_POST['matricula'];
+    $usuario = $_POST['usuario'];
     $senha = $_POST['senha'];
 
-    // Consulta para verificar se o usuário existe no banco de dados
-    $sql = "SELECT * FROM login WHERE matricula = ? AND senha = ?";
+    $sql = "SELECT * FROM login WHERE usuario = ? AND senha = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("is", $matricula, $senha);
+    $stmt->bind_param("is", $usuario, $senha);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows == 1) {
-        // Usuário autenticado com sucesso, redirecione para a página de destino
-        // Por exemplo:
         header("Location: index.php");
         exit();
     } else {
-        // Credenciais inválidas, exiba uma mensagem de erro ou redirecione para a página de login com uma mensagem de erro
-        // Por exemplo:
         header("Location: login.php?error=1");
         exit();
     }
@@ -50,7 +44,7 @@ if (isset($_POST['submit'])) {
             height: 100vh;
         }
         .form-container {
-            max-width: 400px; /* Largura máxima do formulário */
+            max-width: 400px;
         }
     </style>
   </head>
@@ -59,8 +53,8 @@ if (isset($_POST['submit'])) {
     <div class="container-fluid container-custom">
         <form class="form-container" action="login.php" method="post">
             <div class="mb-3">
-              <label for="matricula" class="form-label">MATRÍCULA</label>
-              <input type="text" class="form-control" id="matricula" name="matricula">
+              <label for="usuario" class="form-label">USUÁRIO</label>
+              <input type="text" class="form-control" id="usuario" name="usuario">
             </div>
             <div class="mb-3">
               <label for="senha" class="form-label">SENHA</label>
