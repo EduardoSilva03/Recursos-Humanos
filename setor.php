@@ -1,6 +1,12 @@
-<?php include ('./conn.php'); ?>
-
 <?php 
+  session_start();
+  include_once('./conn.php');
+
+  if (!isset($_SESSION['usuario'])) {
+    header("Location: login.php");
+    exit();
+  }
+
   if (isset($_POST['submit'])) {
     $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
     $fk_id_unidade = isset($_POST['unidade']) ? $_POST['unidade'] : '';

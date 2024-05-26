@@ -1,17 +1,19 @@
 <?php
-include_once('conn.php');
+session_start();
+include_once('./conn.php');
 
 if (isset($_POST['submit'])) {
     $usuario = $_POST['usuario'];
     $senha = $_POST['senha'];
 
-    $sql = "SELECT * FROM login WHERE usuario = ? AND senha = ?";
+    $sql = "SELECT * FROM login WHERE usuario = ? AND senha = md5(?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("is", $usuario, $senha);
+    $stmt->bind_param("ss", $usuario, $senha); // Use "ss" for both strings
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows == 1) {
+        $_SESSION['usuario'] = $usuario; // Store the username in the session
         header("Location: index.php");
         exit();
     } else {

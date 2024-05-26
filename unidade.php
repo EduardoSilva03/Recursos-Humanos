@@ -1,11 +1,12 @@
 <?php 
+  session_start();
+  include_once('./conn.php');
 
-include ('./conn.php');
+  if (!isset($_SESSION['usuario'])) {
+    header("Location: login.php");
+    exit();
+  }
 
-?>
-
-<?php 
-  
   if (isset($_POST['submit']))
   {
 

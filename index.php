@@ -1,3 +1,13 @@
+<?php 
+  session_start();
+  include_once('./conn.php');
+
+  if (!isset($_SESSION['usuario'])) {
+    header("Location: login.php");
+    exit();
+  }
+?>
+
 <!doctype html>
 <html lang="pt-BR">
   <head>
