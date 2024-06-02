@@ -6,6 +6,12 @@
     header("Location: login.php");
     exit();
   }
+
+  if (isset($_POST['logout'])) {
+    session_destroy();
+    header("Location: login.php");
+    exit();
+  }
 ?>
 
 <!doctype html>
@@ -23,9 +29,6 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
         <a class="navbar-brand" href="/Recursos Humanos/index.php">Recursos Humanos</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
         <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
           <ul class="navbar-nav">
             <li class="nav-item dropdown">
@@ -47,6 +50,10 @@
             </li>
           </ul>
         </div>
+        <!-- Botão de logoff -->
+        <form class="d-flex" method="POST">
+          <button class="btn btn-outline-light me-2" type="submit" name="logout">Logoff</button>
+        </form>
       </div>
     </nav>
 

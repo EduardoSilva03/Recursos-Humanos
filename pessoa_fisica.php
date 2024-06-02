@@ -7,6 +7,12 @@
     exit();
   }
 
+  if (isset($_POST['logout'])) {
+    session_destroy();
+    header("Location: login.php");
+    exit();
+  }
+
   if (isset($_POST['submit'])) {
     $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
     $rg = isset($_POST['rg']) ? $_POST['rg'] : '';
@@ -87,6 +93,10 @@
             </li>
           </ul>
         </div>
+        <!-- Botão de logoff -->
+        <form class="d-flex" method="POST">
+          <button class="btn btn-outline-light me-2" type="submit" name="logout">Logoff</button>
+        </form>
       </div>
     </nav>
 </div>

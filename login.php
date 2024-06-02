@@ -8,12 +8,12 @@ if (isset($_POST['submit'])) {
 
     $sql = "SELECT * FROM login WHERE usuario = ? AND senha = md5(?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $usuario, $senha); // Use "ss" for both strings
+    $stmt->bind_param("ss", $usuario, $senha);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows == 1) {
-        $_SESSION['usuario'] = $usuario; // Store the username in the session
+        $_SESSION['usuario'] = $usuario;
         header("Location: index.php");
         exit();
     } else {

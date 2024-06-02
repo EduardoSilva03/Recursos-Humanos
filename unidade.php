@@ -7,6 +7,12 @@
     exit();
   }
 
+  if (isset($_POST['logout'])) {
+    session_destroy();
+    header("Location: login.php");
+    exit();
+  }
+
   if (isset($_POST['submit']))
   {
 
@@ -77,6 +83,10 @@
             </li>
           </ul>
         </div>
+        <!-- Botão de logoff -->
+        <form class="d-flex" method="POST">
+          <button class="btn btn-outline-light me-2" type="submit" name="logout">Logoff</button>
+        </form>
       </div>
     </nav>
 
@@ -89,9 +99,7 @@
         <select class="form-select border border-dark" id="floatingSelect" aria-label="Floating label select example" name="unidade">
         <option value="" disabled selected>Selecionar Unidade Existente</option>
             <?php
-            // Verificar se há resultados da consulta
             if ($result->num_rows > 0) {
-              // Loop através dos resultados e exibir opções
               while($row = $result->fetch_assoc()) {
                 echo "<option value='" . $row['nome'] . "'>" . $row['nome'] . "</option>";
               }
