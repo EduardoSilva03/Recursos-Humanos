@@ -1,5 +1,4 @@
 <?php
-
   session_start();
   include_once('./conn.php');
 
@@ -14,6 +13,28 @@
     exit();
   }
 
+  if (isset($_POST['submit'])) {
+    $fk_id_pessoa = isset($_POST['pessoa_fisica']) ? $_POST['pessoa_fisica'] : '';
+    $hora_inicial = isset($_POST['hora_inicial']) ? $_POST['hora_inicial'] : '';
+    $hora_final = isset($_POST['hora_final']) ? $_POST['hora_final'] : '';
+    $data = isset($_POST['data']) ? $_POST['data'] : '';
+
+    if ($fk_id_pessoa && $hora_inicial && $hora_final && $data) {
+      $string_sql = mysqli_query($conn, "INSERT INTO controle_ponto (cd_pessoa, data, hora_inicial, hora_final) 
+        VALUES ('$fk_id_pessoa', '$data', '$hora_inicial', '$hora_final')");
+      if (!$string_sql) {
+        echo "Erro ao cadastrar controle de ponto: " . mysqli_error($conn);
+      } else {
+        echo "Controle de ponto cadastrado com sucesso.";
+      }
+    }
+  }
+
+?>
+
+<?php 
+  $sql = "SELECT cd_pessoa, nome FROM pessoa_fisica";
+  $result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -83,6 +104,24 @@
 
 <br>
 
+<form method="post" action="controle_ponto.php">
+<div class="row g-3 d-flex justify-content-center">
+        <div class="col-sm-2">
+          <select class="form-select border border-dark" name="pessoa_fisica">
+            <option value="" disabled selected>Selecionar Funcionário</option>
+            <?php
+              if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                  echo "<option value='" . $row['cd_pessoa'] . "'>" . $row['nome'] . "</option>";
+                }
+              }
+            ?>
+          </select>
+        </div>
+</div>
+
+<br>
+
 <div id="calendar"></div>
 
 <!-- Modal para adicionar horário -->
@@ -95,23 +134,25 @@
             </div>
             <div class="modal-body">
                 <form id="eventForm">
+                    <input type="hidden" id="selectedDate" name="data">
                     <div class="mb-3">
                         <label for="startTime" class="form-label">Horário Inicial</label>
-                        <input type="time" class="form-control" id="startTime" required>
+                        <input type="time" class="form-control" id="hora_inicial" name="hora_inicial" required>
                     </div>
                     <div class="mb-3">
                         <label for="endTime" class="form-label">Horário Final</label>
-                        <input type="time" class="form-control" id="endTime" required>
+                        <input type="time" class="form-control" id="hora_final" name="hora_final" required>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="saveEvent">Salvar</button>
+                <button type="submit" value="submit" name="submit" class="btn btn-primary" id="saveEvent">Salvar</button>
             </div>
         </div>
     </div>
 </div>
+</form>
 
 <script>
     $(document).ready(function() {
@@ -129,9 +170,12 @@
                 var eventModal = new bootstrap.Modal(document.getElementById('eventModal'), {});
                 eventModal.show();
 
+                // Pass the selected date to the hidden input field
+                $('#selectedDate').val(moment(start).format('YYYY-MM-DD'));
+
                 $('#saveEvent').off('click').on('click', function() {
-                    var startTime = $('#startTime').val();
-                    var endTime = $('#endTime').val();
+                    var startTime = $('#hora_inicial').val();
+                    var endTime = $('#hora_final').val();
 
                     if (startTime && endTime) {
                         var eventData = {

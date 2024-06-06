@@ -226,11 +226,11 @@
 <div class="row g-3 d-flex justify-content-center">
   <div class="col-sm-2">
     <br>
-    <button class="form-control btn btn btn-success" type="submit" value="submit" name="submit">Cadastrar</button>
+    <button type="button" class="form-control btn btn btn-danger">Deletar</button>
   </div>
   <div class="col-sm-2">
     <br>
-    <button type="button" class="form-control btn btn btn-danger">Deletar</button>
+    <button class="form-control btn btn btn-success" type="submit" value="submit" name="submit">Cadastrar</button>
   </div>
 </div>
 </form>

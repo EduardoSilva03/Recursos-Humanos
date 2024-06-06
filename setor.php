@@ -127,10 +127,10 @@
 
       <div class="row g-3 d-flex justify-content-center">
         <div class="col-sm-2">
-          <button class="form-control btn btn-success" type="submit" value="submit" name="submit">Cadastrar</button>
+          <button class="form-control btn btn-danger" type="button">Deletar</button>
         </div>
         <div class="col-sm-2">
-          <button class="form-control btn btn-danger" type="button">Deletar</button>
+          <button class="form-control btn btn-success" type="submit" value="submit" name="submit">Cadastrar</button>
         </div>
       </div>
     </form>
