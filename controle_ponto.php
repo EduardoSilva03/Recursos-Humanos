@@ -30,9 +30,6 @@
     }
   }
 
-?>
-
-<?php 
   $sql = "SELECT cd_pessoa, nome FROM pessoa_fisica";
   $result = $conn->query($sql);
 ?>
@@ -107,7 +104,7 @@
 <form method="post" action="controle_ponto.php">
 <div class="row g-3 d-flex justify-content-center">
         <div class="col-sm-2">
-          <select class="form-select border border-dark" name="pessoa_fisica">
+          <select class="form-select border border-dark" name="pessoa_fisica" id="pessoa_fisica">
             <option value="" disabled selected>Selecionar Funcionário</option>
             <?php
               if ($result->num_rows > 0) {
@@ -193,6 +190,36 @@
             },
             editable: true,
             eventLimit: true
+        });
+
+        // Function to load schedules
+        function loadSchedules(cd_pessoa) {
+            $.ajax({
+                url: 'get_schedules.php',
+                type: 'POST',
+                data: { cd_pessoa: cd_pessoa },
+                success: function(response) {
+                    var schedules = JSON.parse(response);
+                    $('#calendar').fullCalendar('removeEvents');
+                    schedules.forEach(function(schedule) {
+                        var eventData = {
+                            title: 'Expediente',
+                            start: schedule.data + 'T' + schedule.hora_inicial,
+                            end: schedule.data + 'T' + schedule.hora_final
+                        };
+                        $('#calendar').fullCalendar('renderEvent', eventData, true);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX error:', status, error);
+                }
+            });
+        }
+
+        // Event listener for employee selection
+        $('#pessoa_fisica').change(function() {
+            var cd_pessoa = $(this).val();
+            loadSchedules(cd_pessoa);
         });
     });
 </script>
