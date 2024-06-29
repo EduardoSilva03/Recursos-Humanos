@@ -48,7 +48,7 @@
   $sql = "SELECT cd_unidade, nome FROM unidade";
   $result = $conn->query($sql);
 
-  $sql2 = "SELECT cd_setor, nome FROM setor";
+  $sql2 = "SELECT s.cd_setor, s.nome FROM setor s INNER JOIN unidade u ON s.cd_unidade = u.cd_unidade WHERE 1=1";
   $result2 = $conn->query($sql2);
 ?>
 
@@ -171,30 +171,23 @@
 <br>
 
 <div class="row g-3 d-flex justify-content-center">
-        <div class="col-sm-2">
-          <select class="form-select border border-dark" name="unidade">
-            <option value="" disabled selected>Selecionar Unidade Existente</option>
-            <?php
-              if ($result->num_rows > 0) {
-                while($row = $result->fetch_assoc()) {
-                  echo "<option value='" . $row['cd_unidade'] . "'>" . $row['nome'] . "</option>";
-                }
-              }
-            ?>
-          </select>
-        </div>
-        <div class="col-sm-2">
-          <select class="form-select border border-dark" name="setor">
-            <option value="" disabled selected>Selecionar Setor Existente</option>
-            <?php
-              if ($result2->num_rows > 0) {
-                while($row = $result2->fetch_assoc()) {
-                  echo "<option value='" . $row['cd_setor'] . "'>" . $row['nome'] . "</option>";
-                }
-              }
-            ?>
-          </select>
-        </div>
+<div class="col-sm-2">
+  <select class="form-select border border-dark" name="unidade" id="unidade">
+    <option value="" disabled selected>Selecionar Unidade Existente</option>
+    <?php
+      if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+          echo "<option value='" . $row['cd_unidade'] . "'>" . $row['nome'] . "</option>";
+        }
+      }
+    ?>
+  </select>
+</div>
+<div class="col-sm-2">
+  <select class="form-select border border-dark" name="setor" id="setor">
+    <option value="" disabled selected>Selecionar Setor Existente</option>
+  </select>
+</div>
 </div>
 
 <br>
@@ -264,6 +257,22 @@
   </div>
 </div>
 </form>
+
+<script>
+  document.getElementById('unidade').addEventListener('change', function() {
+    var unidadeId = this.value;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'get_setores.php', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+      if (this.status == 200) {
+        document.getElementById('setor').innerHTML = this.responseText;
+      }
+    };
+    xhr.send('unidade=' + unidadeId);
+  });
+</script>
+
 
   </body>
 </html>

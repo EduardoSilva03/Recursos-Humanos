@@ -30,7 +30,7 @@
     }
   }
 
-  $sql = "SELECT cd_pessoa, nome FROM pessoa_fisica";
+  $sql = "SELECT pf.cd_pessoa, pf.nome, u.nome AS unidade FROM pessoa_fisica pf INNER JOIN unidade u ON pf.cd_unidade = u.cd_unidade";
   $result = $conn->query($sql);
 ?>
 
@@ -103,18 +103,18 @@
 
 <form method="post" action="controle_ponto.php">
 <div class="row g-3 d-flex justify-content-center">
-        <div class="col-sm-2">
-          <select class="form-select border border-dark" name="pessoa_fisica" id="pessoa_fisica">
+    <div class="col-sm-2">
+        <select class="form-select border border-dark" name="pessoa_fisica" id="pessoa_fisica">
             <option value="" disabled selected>Selecionar Funcionário</option>
             <?php
               if ($result->num_rows > 0) {
                 while($row = $result->fetch_assoc()) {
-                  echo "<option value='" . $row['cd_pessoa'] . "'>" . $row['nome'] . "</option>";
+                  echo "<option value='" . $row['cd_pessoa'] . "'>" . $row['cd_pessoa'] . " - " . $row['nome'] . " - " . $row['unidade'] . "</option>";
                 }
               }
             ?>
-          </select>
-        </div>
+        </select>
+    </div>
 </div>
 
 <br>
