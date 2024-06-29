@@ -73,6 +73,7 @@
               </a>
               <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
                 <li><a class="dropdown-item" href="/Recursos Humanos/controle_ponto.php">Controle de Ponto</a></li>
+                <li><a class="dropdown-item" href="/Recursos Humanos/funcionario.php">Funcionário</a></li>
               </ul>
             </li>
           </ul>
