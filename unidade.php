@@ -1,21 +1,29 @@
 <?php 
-  session_start();
-  include_once('./conn.php');
 
-  if (!isset($_SESSION['usuario'])) {
-    header("Location: login.php");
-    exit();
+session_start();
+include_once('./conn.php');
+
+if (!isset($_SESSION['usuario'])) {
+  header("Location: login.php");
+  exit();
+}
+
+if (isset($_POST['logout'])) {
+  session_destroy();
+  header("Location: login.php");
+  exit();
+}
+
+$unidade = null;
+if (isset($_GET['id'])) {
+  $id = $_GET['id'];
+  $result = $conn->query("SELECT * FROM unidade WHERE cd_unidade = $id");
+  if ($result->num_rows > 0) {
+    $unidade = $result->fetch_assoc();
   }
+}
 
-  if (isset($_POST['logout'])) {
-    session_destroy();
-    header("Location: login.php");
-    exit();
-  }
-
-  if (isset($_POST['submit']))
-  {
-
+if (isset($_POST['submit'])) {
   $cnpj = isset($_POST['cnpj']) ? $_POST['cnpj'] : '';
   $razao_social = isset($_POST['razao_social']) ? $_POST['razao_social'] : '';
   $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
@@ -28,19 +36,39 @@
   $numero = isset($_POST['numero']) ? $_POST['numero'] : '';
   $complemento = isset($_POST['complemento']) ? $_POST['complemento'] : '';
   $bairro = isset($_POST['bairro']) ? $_POST['bairro'] : '';
+  $id = isset($_POST['id']) ? $_POST['id'] : '';
 
-  $string_sql = mysqli_query($conn, "INSERT INTO unidade (cnpj, razao_social, nome, email, site, cep, municipio, uf, logradouro, numero, complemento, bairro) 
-  VALUES ('$cnpj', '$razao_social', '$nome', '$email', '$site', '$cep', '$municipio', '$uf', '$logradouro', '$numero', '$complemento', '$bairro')");
+  if (!empty($id)) {
+    $sql = "UPDATE unidade SET cnpj = '$cnpj', razao_social = '$razao_social', nome = '$nome', email = '$email', site = '$site', cep = '$cep', municipio = '$municipio', uf = '$uf', logradouro = '$logradouro', bairro = '$bairro', numero = '$numero', complemento = '$complemento' WHERE cd_unidade = $id";
+  } else {
+    $sql = "INSERT INTO unidade (cnpj, razao_social, nome, email, site, cep, municipio, uf, logradouro, bairro, numero, complemento) VALUES ('$cnpj', '$razao_social', '$nome', '$email', '$site', '$cep', '$municipio', '$uf', '$logradouro', '$bairro', '$numero', '$complemento')";
   }
 
-  ?>
+  if ($conn->query($sql) === TRUE) {
+    header("Location: consulta_unidade.php");
+    exit();
+  } else {
+    echo "Erro: " . $conn->error;
+  }
+}
 
-  <?php 
+if (isset($_POST['delete'])) {
+  $id = isset($_POST['id']) ? $_POST['id'] : '';
+
+  if (!empty($id)) {
+    $sql = "DELETE FROM unidade WHERE cd_unidade = $id";
+
+    if ($conn->query($sql) === TRUE) {
+      header("Location: consulta_unidade.php");
+      exit();
+    } else {
+      echo "Erro: " . $conn->error;
+    }
   
-  $sql = "SELECT nome FROM unidade";
-  $result = $conn->query($sql);
-  
-  ?>
+  }
+}
+
+?>
 
 <!doctype html>
 <html lang="pt-BR">
@@ -112,32 +140,12 @@
 
 <b class="d-flex justify-content-center">Unidade</b><br>
 
-<div class="row g-3 d-flex justify-content-center">
-    <div class="col-sm-4">
-        <select class="form-select border border-dark" id="floatingSelect" aria-label="Floating label select example" name="unidade">
-        <option value="" disabled selected>Selecionar Unidade Existente</option>
-            <?php
-            if ($result->num_rows > 0) {
-              while($row = $result->fetch_assoc()) {
-                echo "<option value='" . $row['nome'] . "'>" . $row['nome'] . "</option>";
-              }
-            }
-            ?>
-        </select>
-    </div>
-</div>
-
-<br>
-
 <form method="post" action="unidade.php">
+<input type="hidden" name="id" value="<?php echo $unidade ? $unidade['cd_unidade'] : ''; ?>">
 <div class="row g-3 d-flex justify-content-center">
-      <div class="col-sm-1">
-        <label>Código:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Código" disabled=true id="codigo">
-      </div>
-      <div class="col-sm-3">
+      <div class="col-sm-4">
         <label>CNPJ:</label>
-        <input type="text" class="form-control border border-dark" aria-label="cnpj" name="cnpj", id="cnpj">
+        <input type="text" class="form-control border border-dark" aria-label="cnpj" name="cnpj", id="cnpj" value="<?php echo $unidade ? $unidade['cnpj'] : ''; ?>">
       </div>
 </div>
 
@@ -146,7 +154,7 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-4">
         <label>Razão Social:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Razão Social" name="razao_social">
+        <input type="text" class="form-control border border-dark" aria-label="Razão Social" name="razao_social" value="<?php echo $unidade ? $unidade['razao_social'] : ''; ?>">
       </div>
 </div>
 
@@ -155,7 +163,7 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-4">
         <label>Nome:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Nome" name="nome">
+        <input type="text" class="form-control border border-dark" aria-label="Nome" name="nome" value="<?php echo $unidade ? $unidade['nome'] : ''; ?>">
       </div>
 </div>
 
@@ -164,7 +172,7 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-4">
         <label>E-mail:</label>
-        <input type="text" class="form-control border border-dark" aria-label="E-mail" name="email">
+        <input type="text" class="form-control border border-dark" aria-label="E-mail" name="email" value="<?php echo $unidade ? $unidade['email'] : ''; ?>">
       </div>
 </div>
 
@@ -173,7 +181,7 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-4">
         <label>Site:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Site" name="site">
+        <input type="text" class="form-control border border-dark" aria-label="Site" name="site" value="<?php echo $unidade ? $unidade['site'] : ''; ?>">
       </div>
 </div>
 
@@ -184,7 +192,7 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-1">
         <label>CEP:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Cep" id="cep" name="cep">
+        <input type="text" class="form-control border border-dark" aria-label="Cep" id="cep" name="cep" value="<?php echo $unidade ? $unidade['cep'] : ''; ?>">
       </div>
       <div class="col-sm-1">
         <br>
@@ -197,11 +205,11 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-3">
         <label>Município:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Município" name="municipio" id="municipio">
+        <input type="text" class="form-control border border-dark" aria-label="Município" name="municipio" id="municipio" value="<?php echo $unidade ? $unidade['municipio'] : ''; ?>">
       </div>
       <div class="col-sm-1">
         <label>UF:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Uf" name="uf" id="uf">
+        <input type="text" class="form-control border border-dark" aria-label="Uf" name="uf" id="uf" value="<?php echo $unidade ? $unidade['uf'] : ''; ?>">
       </div>
 </div>
 
@@ -210,11 +218,11 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-3">
         <label>Logradouro:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Logradouro" name="logradouro" id="logradouro">
+        <input type="text" class="form-control border border-dark" aria-label="Logradouro" name="logradouro" id="logradouro" value="<?php echo $unidade ? $unidade['logradouro'] : ''; ?>">
       </div>
       <div class="col-sm-1">
         <label>Número:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Número" name="numero">
+        <input type="text" class="form-control border border-dark" aria-label="Número" name="numero" value="<?php echo $unidade ? $unidade['numero'] : ''; ?>">
       </div>
 </div>
 
@@ -223,11 +231,11 @@
 <div class="row g-3 d-flex justify-content-center">
       <div class="col-sm-2">
         <label>Complemento:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Complemento" name="complemento">
+        <input type="text" class="form-control border border-dark" aria-label="Complemento" name="complemento" value="<?php echo $unidade ? $unidade['complemento'] : ''; ?>">
       </div>
       <div class="col-sm-2">
         <label>Bairro:</label>
-        <input type="text" class="form-control border border-dark" aria-label="Bairro" id="bairro" name="bairro">
+        <input type="text" class="form-control border border-dark" aria-label="Bairro" id="bairro" name="bairro" value="<?php echo $unidade ? $unidade['bairro'] : ''; ?>">
       </div>
 </div>
 
@@ -236,7 +244,7 @@
 <div class="row g-3 d-flex justify-content-center">
   <div class="col-sm-2">
     <br>
-    <button type="button" class="form-control btn btn btn-danger">Deletar</button>
+    <button type="submit" name="delete" class="form-control btn btn btn-danger">Deletar</button>
   </div>
   <div class="col-sm-2">
     <br>

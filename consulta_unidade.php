@@ -18,7 +18,7 @@
     $nomeUnidade = $_POST['nomeUnidade'];
   }
 
-  $sql = "SELECT cd_unidade, cnpj, razao_social, nome FROM unidade";
+  $sql = "SELECT * FROM unidade";
   
   if ($nomeUnidade != "") {
     $sql .= " WHERE nome LIKE '%" . $conn->real_escape_string($nomeUnidade) . "%'";
@@ -40,7 +40,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/pt-br.js"></script> <!-- Adicionando arquivo de localização -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/pt-br.js"></script>
     <style>
         body, html {
             height: 100%;
@@ -98,7 +98,6 @@
             </li>
           </ul>
         </div>
-        <!-- Botão de logoff -->
         <form class="d-flex" method="POST">
           <button class="btn btn-outline-light me-2" type="submit" name="logout">Logoff</button>
         </form>
@@ -126,6 +125,7 @@
                 <th>CNPJ</th>
                 <th>RAZAO SOCIAL</th>
                 <th>NOME</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -135,6 +135,7 @@
                     <td><?php echo $row['cnpj']; ?></td>
                     <td><?php echo $row['razao_social']; ?></td>
                     <td><?php echo $row['nome']; ?></td>
+                    <td><a href="unidade.php?id=<?php echo $row['cd_unidade']; ?>" class="btn btn-warning">Editar</a></td>
                 </tr>
             <?php } ?>
         </tbody>
