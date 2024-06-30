@@ -132,6 +132,7 @@
                 <th>Data nascimento</th>
                 <th>Unidade</th>
                 <th>Setor</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -144,6 +145,7 @@
                     <td><?php echo $row['data_nascimento']; ?></td>
                     <td><?php echo $row['Unidade']; ?></td>
                     <td><?php echo $row['Setor']; ?></td>
+                    <td><a href="pessoa_fisica.php?id=<?php echo $row['cd_pessoa']; ?>" class="btn btn-warning">Editar</a></td>
                 </tr>
             <?php } ?>
         </tbody>

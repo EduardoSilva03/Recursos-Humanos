@@ -13,25 +13,27 @@
     exit();
   }
 
-$setor = null;
-if (isset($_GET['id'])) {
-  $id = $_GET['id'];
-  $result = $conn->query("SELECT s.cd_setor, s.nome, s.cd_unidade, u.nome AS nomeUnidade FROM setor s INNER JOIN unidade u ON s.cd_unidade = u.cd_unidade WHERE s.cd_setor = $id");
-  if ($result->num_rows > 0) {
-    $setor = $result->fetch_assoc();
+  $setor = null;
+  $id = null;
+  if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+    $result = $conn->query("SELECT s.cd_setor, s.nome, s.cd_unidade, u.nome AS nomeUnidade FROM setor s INNER JOIN unidade u ON s.cd_unidade = u.cd_unidade WHERE s.cd_setor = $id");
+    if ($result->num_rows > 0) {
+      $setor = $result->fetch_assoc();
+    }
   }
-}
 
   if (isset($_POST['submit'])) {
     $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
     $fk_id_unidade = isset($_POST['unidade']) ? $_POST['unidade'] : '';
+    $id = isset($_POST['id']) ? $_POST['id'] : '';
 
     if (!empty($id)) {
       $sql = "UPDATE setor SET nome = '$nome', cd_unidade = '$fk_id_unidade' WHERE cd_setor = $id";
     } else {
       $sql = "INSERT INTO setor (nome, cd_unidade) VALUES ('$nome', '$fk_id_unidade')";
     }
-  
+
     if ($conn->query($sql) === TRUE) {
       header("Location: consulta_setor.php");
       exit();
@@ -42,17 +44,16 @@ if (isset($_GET['id'])) {
 
   if (isset($_POST['delete'])) {
     $id = isset($_POST['id']) ? $_POST['id'] : '';
-  
+
     if (!empty($id)) {
       $sql = "DELETE FROM setor WHERE cd_setor = $id";
-  
+
       if ($conn->query($sql) === TRUE) {
         header("Location: consulta_setor.php");
         exit();
       } else {
         echo "Erro: " . $conn->error;
       }
-    
     }
   }
 ?>
@@ -145,18 +146,17 @@ if (isset($_GET['id'])) {
 
       <div class="row g-3 d-flex justify-content-center">
         <div class="col-sm-4">
-        <select class="form-select border border-dark" name="unidade">
-  <option value="" disabled selected>Selecionar Unidade Existente</option>
-  <?php
-    if ($result->num_rows > 0) {
-      while($row = $result->fetch_assoc()) {
-        $selected = ($setor && $setor['cd_unidade'] == $row['cd_unidade']) ? 'selected' : '';
-        echo "<option value='" . $row['cd_unidade'] . "' $selected>" . $row['nome'] . "</option>";
-      }
-    }
-  ?>
-</select>
-
+          <select class="form-select border border-dark" name="unidade">
+            <option value="" disabled selected>Selecionar Unidade Existente</option>
+            <?php
+              if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                  $selected = ($setor && $setor['cd_unidade'] == $row['cd_unidade']) ? 'selected' : '';
+                  echo "<option value='" . $row['cd_unidade'] . "' $selected>" . $row['nome'] . "</option>";
+                }
+              }
+            ?>
+          </select>
         </div>
       </div>
 

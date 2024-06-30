@@ -123,8 +123,8 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>NOME</th>
-                <th>UNIDADE</th>
+                <th>Nome</th>
+                <th>Unidade</th>
                 <th>Ações</th>
             </tr>
         </thead>
