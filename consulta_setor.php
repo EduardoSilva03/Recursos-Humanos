@@ -125,6 +125,7 @@
                 <th>ID</th>
                 <th>NOME</th>
                 <th>UNIDADE</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -133,6 +134,7 @@
                     <td><?php echo $row['cd_setor']; ?></td>
                     <td><?php echo $row['nome']; ?></td>
                     <td><?php echo $row['unidade']; ?></td>
+                    <td><a href="setor.php?id=<?php echo $row['cd_setor']; ?>" class="btn btn-warning">Editar</a></td>
                 </tr>
             <?php } ?>
         </tbody>

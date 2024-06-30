@@ -13,18 +13,46 @@
     exit();
   }
 
+$setor = null;
+if (isset($_GET['id'])) {
+  $id = $_GET['id'];
+  $result = $conn->query("SELECT s.cd_setor, s.nome, s.cd_unidade, u.nome AS nomeUnidade FROM setor s INNER JOIN unidade u ON s.cd_unidade = u.cd_unidade WHERE s.cd_setor = $id");
+  if ($result->num_rows > 0) {
+    $setor = $result->fetch_assoc();
+  }
+}
+
   if (isset($_POST['submit'])) {
     $nome = isset($_POST['nome']) ? $_POST['nome'] : '';
     $fk_id_unidade = isset($_POST['unidade']) ? $_POST['unidade'] : '';
 
-    if ($nome && $fk_id_unidade) {
-      $string_sql = mysqli_query($conn, "INSERT INTO setor (nome, cd_unidade) 
-        VALUES ('$nome', '$fk_id_unidade')");
-      if (!$string_sql) {
-        echo "Erro ao cadastrar setor: " . mysqli_error($conn);
+    if (!empty($id)) {
+      $sql = "UPDATE setor SET nome = '$nome', cd_unidade = '$fk_id_unidade' WHERE cd_setor = $id";
+    } else {
+      $sql = "INSERT INTO setor (nome, cd_unidade) VALUES ('$nome', '$fk_id_unidade')";
+    }
+  
+    if ($conn->query($sql) === TRUE) {
+      header("Location: consulta_setor.php");
+      exit();
+    } else {
+      echo "Erro: " . $conn->error;
+    }
+  }
+
+  if (isset($_POST['delete'])) {
+    $id = isset($_POST['id']) ? $_POST['id'] : '';
+  
+    if (!empty($id)) {
+      $sql = "DELETE FROM setor WHERE cd_setor = $id";
+  
+      if ($conn->query($sql) === TRUE) {
+        header("Location: consulta_setor.php");
+        exit();
       } else {
-        echo "Setor cadastrado com sucesso.";
+        echo "Erro: " . $conn->error;
       }
+    
     }
   }
 ?>
@@ -105,14 +133,11 @@
     <b class="d-flex justify-content-center">Setor</b><br>
 
     <form method="post" action="setor.php">
+    <input type="hidden" name="id" value="<?php echo $setor ? $setor['cd_setor'] : ''; ?>">
       <div class="row g-3 d-flex justify-content-center">
-        <div class="col-sm-1">
-          <label>Código:</label>
-          <input type="text" class="form-control border border-dark" aria-label="Código" disabled>
-        </div>
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           <label>Nome:</label>
-          <input type="text" class="form-control border border-dark" aria-label="Nome" name="nome">
+          <input type="text" class="form-control border border-dark" aria-label="Nome" name="nome" value="<?php echo $setor ? $setor['nome'] : ''; ?>">
         </div>
       </div>
 
@@ -120,16 +145,18 @@
 
       <div class="row g-3 d-flex justify-content-center">
         <div class="col-sm-4">
-          <select class="form-select border border-dark" name="unidade">
-            <option value="" disabled selected>Selecionar Unidade Existente</option>
-            <?php
-              if ($result->num_rows > 0) {
-                while($row = $result->fetch_assoc()) {
-                  echo "<option value='" . $row['cd_unidade'] . "'>" . $row['nome'] . "</option>";
-                }
-              }
-            ?>
-          </select>
+        <select class="form-select border border-dark" name="unidade">
+  <option value="" disabled selected>Selecionar Unidade Existente</option>
+  <?php
+    if ($result->num_rows > 0) {
+      while($row = $result->fetch_assoc()) {
+        $selected = ($setor && $setor['cd_unidade'] == $row['cd_unidade']) ? 'selected' : '';
+        echo "<option value='" . $row['cd_unidade'] . "' $selected>" . $row['nome'] . "</option>";
+      }
+    }
+  ?>
+</select>
+
         </div>
       </div>
 
@@ -137,7 +164,7 @@
 
       <div class="row g-3 d-flex justify-content-center">
         <div class="col-sm-2">
-          <button class="form-control btn btn-danger" type="button">Deletar</button>
+          <button class="form-control btn btn-danger" type="submit" name="delete">Deletar</button>
         </div>
         <div class="col-sm-2">
           <button class="form-control btn btn-success" type="submit" value="submit" name="submit">Cadastrar</button>

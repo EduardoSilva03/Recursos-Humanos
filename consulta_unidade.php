@@ -123,8 +123,8 @@
             <tr>
                 <th>ID</th>
                 <th>CNPJ</th>
-                <th>RAZAO SOCIAL</th>
-                <th>NOME</th>
+                <th>Razão Social</th>
+                <th>Nome</th>
                 <th>Ações</th>
             </tr>
         </thead>
