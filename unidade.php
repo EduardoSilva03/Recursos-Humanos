@@ -55,17 +55,23 @@ if (isset($_POST['submit'])) {
 if (isset($_POST['delete'])) {
   $id = isset($_POST['id']) ? $_POST['id'] : '';
 
-  if (!empty($id)) {
-    $sql = "DELETE FROM unidade WHERE cd_unidade = $id";
+    if (!empty($id)) {
+        $checkSetores = $conn->query("SELECT COUNT(*) AS total FROM setor WHERE cd_unidade = $id");
+        $setorExists = $checkSetores->fetch_assoc();
 
-    if ($conn->query($sql) === TRUE) {
-      header("Location: consulta_unidade.php");
-      exit();
-    } else {
-      echo "Erro: " . $conn->error;
+        if ($setorExists['total'] > 0) {
+            echo "<script>alert('Não é possível excluir esta unidade pois existem setores associados.');</script>";
+        } else {
+            $sql = "DELETE FROM unidade WHERE cd_unidade = $id";
+
+            if ($conn->query($sql) === TRUE) {
+                header("Location: consulta_unidade.php");
+                exit();
+            } else {
+                echo "Erro: " . $conn->error;
+            }
+        }
     }
-  
-  }
 }
 
 ?>
@@ -244,7 +250,7 @@ if (isset($_POST['delete'])) {
 <div class="row g-3 d-flex justify-content-center">
   <div class="col-sm-2">
     <br>
-    <button type="submit" name="delete" class="form-control btn btn btn-danger">Deletar</button>
+    <button type="submit" name="delete" class="form-control btn btn-danger" onclick="return confirmDelete()">Deletar</button>
   </div>
   <div class="col-sm-2">
     <br>
@@ -252,6 +258,17 @@ if (isset($_POST['delete'])) {
   </div>
 </div>
 </form>
+
+<script>
+function confirmDelete() {
+    var result = confirm("Tem certeza que deseja excluir esta unidade? Esta ação não poderá ser desfeita.");
+    if (result) {
+        return true;
+    } else {
+        return false;
+    }
+}
+</script>
 
   </body>
 </html>

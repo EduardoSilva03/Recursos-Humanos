@@ -46,14 +46,22 @@
     $id = isset($_POST['id']) ? $_POST['id'] : '';
 
     if (!empty($id)) {
-      $sql = "DELETE FROM setor WHERE cd_setor = $id";
+        $check_sql = "SELECT COUNT(*) AS total FROM pessoa_fisica WHERE cd_setor = $id";
+        $check_result = $conn->query($check_sql);
+        $row = $check_result->fetch_assoc();
 
-      if ($conn->query($sql) === TRUE) {
-        header("Location: consulta_setor.php");
-        exit();
-      } else {
-        echo "Erro: " . $conn->error;
-      }
+        if ($row['total'] > 0) {
+            echo "<script>alert('Não é possível excluir este setor porque há pessoas físicas associadas a ele.');</script>";
+        } else {
+            $sql = "DELETE FROM setor WHERE cd_setor = $id";
+
+            if ($conn->query($sql) === TRUE) {
+                header("Location: consulta_setor.php");
+                exit();
+            } else {
+                echo "Erro: " . $conn->error;
+            }
+        }
     }
   }
 ?>
@@ -164,13 +172,24 @@
 
       <div class="row g-3 d-flex justify-content-center">
         <div class="col-sm-2">
-          <button class="form-control btn btn-danger" type="submit" name="delete">Deletar</button>
+          <button class="form-control btn btn-danger" type="submit" name="delete" onclick="return confirmDelete()">Deletar</button>
         </div>
         <div class="col-sm-2">
           <button class="form-control btn btn-success" type="submit" value="submit" name="submit">Cadastrar</button>
         </div>
       </div>
     </form>
+
+    <script>
+        function confirmDelete() {
+          var result = confirm("Tem certeza que deseja excluir este setor? Esta ação não poderá ser desfeita.");
+          if (result) {
+              return true;
+          } else {
+              return false;
+          }
+        }
+    </script>
 
   </body>
 </html>

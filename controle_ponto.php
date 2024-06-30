@@ -24,8 +24,6 @@
         VALUES ('$fk_id_pessoa', '$data', '$hora_inicial', '$hora_final')");
       if (!$string_sql) {
         echo "Erro ao cadastrar controle de ponto: " . mysqli_error($conn);
-      } else {
-        echo "Controle de ponto cadastrado com sucesso.";
       }
     }
   }
@@ -134,7 +132,6 @@
 
 <div id="calendar"></div>
 
-<!-- Modal para adicionar horário -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -166,7 +163,6 @@
 
 <script>
     $(document).ready(function() {
-        // Inicializa o calendário
         $('#calendar').fullCalendar({
             locale: 'pt-br',
             header: {
@@ -180,7 +176,6 @@
                 var eventModal = new bootstrap.Modal(document.getElementById('eventModal'), {});
                 eventModal.show();
 
-                // Pass the selected date to the hidden input field
                 $('#selectedDate').val(moment(start).format('YYYY-MM-DD'));
 
                 $('#saveEvent').off('click').on('click', function() {
@@ -205,7 +200,6 @@
             eventLimit: true
         });
 
-        // Function to load schedules
         function loadSchedules(cd_pessoa) {
             $.ajax({
                 url: 'get_schedules.php',
@@ -229,7 +223,6 @@
             });
         }
 
-        // Event listener for employee selection
         $('#pessoa_fisica').change(function() {
             var cd_pessoa = $(this).val();
             loadSchedules(cd_pessoa);

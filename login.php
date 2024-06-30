@@ -55,7 +55,6 @@ if (isset($_POST['submit'])) {
   </head>
   <body class="p-3 m-0 border-0 bd-example m-0 border-0">
 
-<!-- Modal -->
 <div class="modal fade" id="politicaPrivacidadeModal" tabindex="-1" aria-labelledby="politicaPrivacidadeModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -137,7 +136,6 @@ if (isset($_POST['submit'])) {
   </div>
 </div>
 
-<!-- Seu formulário com o link para abrir o modal -->
 <div class="container-fluid container-custom">
     <form class="form-container" action="login.php" method="post">
         <div class="mb-3">

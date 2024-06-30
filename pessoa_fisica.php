@@ -57,17 +57,26 @@
 
   if (isset($_POST['delete'])) {
     $id = isset($_POST['id']) ? $_POST['id'] : '';
-  
-    if (!empty($id)) {
-      $sql = "DELETE FROM pessoa_fisica WHERE cd_pessoa = $id";
-  
-      if ($conn->query($sql) === TRUE) {
-        header("Location: consulta_pessoa_fisica.php");
-        exit();
-      } else {
-        echo "Erro: " . $conn->error;
-      }
-    
+
+    $checkSql = "SELECT cd_pessoa FROM controle_ponto WHERE cd_pessoa = ?";
+    $checkStmt = $conn->prepare($checkSql);
+    $checkStmt->bind_param("i", $id);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
+
+    if ($checkResult->num_rows == 0) {
+        $deleteSql = "DELETE FROM pessoa_fisica WHERE cd_pessoa = ?";
+        $deleteStmt = $conn->prepare($deleteSql);
+        $deleteStmt->bind_param("i", $id);
+
+        if ($deleteStmt->execute()) {
+            header("Location: consulta_pessoa_fisica.php");
+            exit();
+        } else {
+            echo "Erro: " . $conn->error;
+        }
+    } else {
+        echo "<script>alert('Não é possível excluir essa pessoa física pois está vinculada a um controle de ponto.');</script>";
     }
   }
 
@@ -221,7 +230,6 @@
 <div class="col-sm-2">
 <select class="form-select border border-dark" name="setor" id="setor">
     <option value="" disabled>Selecionar Setor Existente</option>
-    <!-- Os setores serão carregados pelo JavaScript -->
 </select>
 </div>
 </div>
@@ -287,7 +295,7 @@
 <div class="row g-3 d-flex justify-content-center">
   <div class="col-sm-2">
     <br>
-    <button type="submit" name="delete" class="form-control btn btn btn-danger">Deletar</button>
+    <button type="submit" name="delete" class="form-control btn btn btn-danger" onclick="return confirmDelete()">Deletar</button>
   </div>
   <div class="col-sm-2">
     <br>
@@ -305,7 +313,6 @@
     xhr.onload = function() {
       if (this.status == 200) {
         document.getElementById('setor').innerHTML = this.responseText;
-        // Seleciona o setor correspondente
         var setorId = '<?php echo $pessoa_fisica ? $pessoa_fisica['cd_setor'] : ''; ?>';
         if (setorId) {
           document.getElementById('setor').value = setorId;
@@ -315,7 +322,6 @@
     xhr.send('unidade=' + unidadeId);
   });
 
-  // Carrega os setores na inicialização se uma unidade estiver selecionada
   window.onload = function() {
     var unidadeId = document.getElementById('unidade').value;
     if (unidadeId) {
@@ -323,6 +329,15 @@
       document.getElementById('unidade').dispatchEvent(event);
     }
   };
+
+  function confirmDelete() {
+    var result = confirm("Tem certeza que deseja excluir essa pessoa física? Esta ação não poderá ser desfeita.");
+    if (result) {
+        return true;
+    } else {
+        return false;
+    }
+  }
 </script>
 
   </body>

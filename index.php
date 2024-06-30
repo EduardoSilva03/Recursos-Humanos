@@ -32,12 +32,11 @@
         background-position: center;
       }
       .navbar {
-        margin-bottom: 20px; /* Adicione margem inferior para evitar sobreposição com o conteúdo */
+        margin-bottom: 20px;
       }
       .container {
-        padding-top: 60px; /* Ajuste o padding superior para evitar que o conteúdo fique muito próximo do topo */
+        padding-top: 60px;
       }
-      /* Estilo adicional pode ser adicionado conforme necessário */
     </style>
   </head>
   <body>
@@ -99,7 +98,7 @@
         <div class="col-lg-8 mx-auto text-center">
           <h1 class="display-4 text-white mt-5">Bem-vindo à Gerenciamento de Recursos Humanos</h1>
           <p class="lead text-white mb-5">Aqui você encontra soluções eficientes para sua empresa.</p>
-          <!-- Exemplo de seção adicional -->
+
           <div class="row">
             <div class="col-md-4">
               <h3 class="text-white">Serviços</h3>
