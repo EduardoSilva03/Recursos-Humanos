@@ -1,34 +1,30 @@
 <?php
-  session_start();
-  include_once('./conn.php');
+include_once('./conn.php');
+verificarSessao();
+realizarLogout();
 
-  if (!isset($_SESSION['usuario'])) {
-    header("Location: login.php");
-    exit();
-  }
+$nomeFuncionario = $_POST['nomeFuncionario'] ?? "";
 
-  if (isset($_POST['logout'])) {
-    session_destroy();
-    header("Location: login.php");
-    exit();
-  }
+$sql = "SELECT pf.cd_pessoa, pf.nome, pf.rg, pf.cpf, pf.data_nascimento, u.nome AS Unidade, s.nome AS Setor 
+        FROM pessoa_fisica pf 
+        INNER JOIN unidade u ON pf.cd_unidade = u.cd_unidade 
+        INNER JOIN setor s ON pf.cd_setor = s.cd_setor";
 
-  $nomeFuncionario = "";
-  if (isset($_POST['nomeFuncionario'])) {
-    $nomeFuncionario = $_POST['nomeFuncionario'];
-  }
+if ($nomeFuncionario) {
+    $sql .= " WHERE pf.nome LIKE ?";
+}
 
-  $sql = "SELECT pf.cd_pessoa, pf.nome, pf.rg, pf.cpf, pf.data_nascimento, u.nome AS Unidade, s.nome as Setor 
-          FROM pessoa_fisica pf 
-          INNER JOIN unidade u ON pf.cd_unidade = u.cd_unidade 
-          INNER JOIN setor s on pf.cd_setor = s.cd_setor";
-  
-  if ($nomeFuncionario != "") {
-    $sql .= " WHERE pf.nome LIKE '%" . $conn->real_escape_string($nomeFuncionario) . "%'";
-  }
+$stmt = $conn->prepare($sql);
 
-  $result = $conn->query($sql);
+if ($nomeFuncionario) {
+    $nomeFuncionario = "%$nomeFuncionario%";
+    $stmt->bind_param("s", $nomeFuncionario);
+}
+
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
